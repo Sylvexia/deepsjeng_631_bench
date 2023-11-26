@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
 set(PROJECT_NAME Optimize)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64 -pg -fopenmp -O3 -march=native")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64 -pg -fopenmp -O0")
+set(CMAKE_CXX_COMPILER icpc)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -m64 -pg -fopenmp -O3 -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fopenmp -O3")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -prof-gen=srcpos -prof-dir=/home/sylvex/Desktop/deepsjeng_631_bench/sylvex_ws/no_optimize/codecov -std=c++11 -fopenmp -O0")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -prof-use -prof-dir=/home/sylvex/Desktop/deepsjeng_631_bench/sylvex_ws/no_optimize/codecov -std=c++11 -fopenmp -O0")
 add_definitions(-DBIG_MEMORY)
 
 project(${PROJECT_NAME})
