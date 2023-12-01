@@ -88,13 +88,15 @@ void StoreTT(state_t*s,
     BITBOARD nhash;
     unsigned int index;
     ttentry_t *temp;
-    ttbucket_t *entry;    
+    ttbucket_t *entry;
 
-    if (!s->white_to_move) {
-        nhash = s->hash + 1;
-    } else {
-        nhash = s->hash;
-    }
+    nhash = s->hash + (!s->white_to_move);
+
+    // if (!s->white_to_move) {
+    //     nhash = s->hash + 1;
+    // } else {
+    //     nhash = s->hash;
+    // }
 
     index = (unsigned int)nhash;
     temp = &(TTable[index % TTSize]);
@@ -108,14 +110,8 @@ void StoreTT(state_t*s,
 
     for (i = 0; i < BUCKETS; i++) {
         if (temp->buckets[i].hash == nhash) {
-            s->TTStores++;
             besti = i;
             break;
-        } else {
-            s->TTStores++;
-            if (temp->buckets[i].age == TTAge) {             
-                s->TTColls++;
-            }
         }
 
         pdepth = temp->buckets[i].depth - (abs((int)(temp->buckets[i].age - TTAge)) * 1024);
@@ -183,28 +179,19 @@ int ProbeTT(state_t *s,
 
     *donull = TRUE;
 
-    s->TTProbes++;
-
-    if (!s->white_to_move) {
-        nhash = s->hash + 1;
-    } else {
-        nhash = s->hash;
-    }
+    nhash = s->hash + (!s->white_to_move);
 
     index = (unsigned int)nhash;
     temp = &(TTable[index % (TTSize)]);
 
     nhash >>= 32;
 
+    #pragma unroll
     for (i = 0; i < BUCKETS; i++) {
-        if (temp->buckets[i].hash == nhash) {
-            s->TTHits++;
-
-            entry = &(temp->buckets[i]);                        
+        entry = temp->buckets + i;
+        if (entry->hash == nhash) {
             
-            if (entry->age != TTAge) {
-                entry->age = TTAge;
-            }
+            entry->age = TTAge;
 
             if (entry->type == UPPER 
                 && depth - 4 * PLY <= entry->depth 

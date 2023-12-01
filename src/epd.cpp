@@ -368,7 +368,6 @@ void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
                  s->nodes,
                  (float)((float)s->qnodes / (float)s->nodes * 100.0));
 
-        dumpsearchstat(s);
 
         myprintf("\n");        
     };

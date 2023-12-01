@@ -26,7 +26,6 @@ void post_multipv_thinking(state_t *s, int score, int mc, move_s move);
 unsigned short compact_move(move_s move);
 void init_game(gamestate_t *g, state_t *s);
 void reset_piece_square(state_t *s);
-void dumpsearchstat(state_t *s);
 void display_board(state_t *s, int color);
 void myprintf(const char *fmt, ...);
 void comp_to_san(state_t *s, move_s move, char *str);

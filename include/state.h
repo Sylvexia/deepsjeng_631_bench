@@ -48,11 +48,7 @@ struct state_t {
         search statistics must be in state
         so they are CPU-local
     */
-    unsigned int TTProbes;
-    unsigned int TTHits;
-    unsigned int TTStores;
-    unsigned int TTColls;   
- 
+    // Removed TTStats
     /* 
         chess960 mode, these are read only
         but handy to have in state_t

@@ -1596,11 +1596,6 @@ void reset_search_counters(state_t *s) {
         scoreboard.threadstate[i].qnodes = 0;
     }
 
-    s->TTProbes = 0;
-    s->TTHits = 0;
-    s->TTStores = 0;
-    s->TTColls = 0;
-
     gamestate.extendedtime = 0;
 }
 
@@ -1743,10 +1738,6 @@ move_s think(gamestate_t *g, state_t *s) {
          gamestate.i_depth <= std::min(40, gamestate.maxdepth);
          gamestate.i_depth++) {
 
-        if (uci_mode) {
-            s->TTStores >>= 1;
-            s->TTColls >>= 1;
-        }
 
         if (gamestate.i_depth > s->maxply) {
             s->maxply = gamestate.i_depth;

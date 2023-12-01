@@ -102,11 +102,6 @@ int logL(int num) {
     return b;
 }
 
-void dumpsearchstat(state_t *s) {
-    if (!uci_mode) {    
-    }
-}
-
 int allocate_time(gamestate_t *g, int alloc) {
     /* 
         calculate the ammount of time the program can use in its search, measured
