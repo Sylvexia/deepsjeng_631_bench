@@ -1499,12 +1499,6 @@ move_s search_root(state_t *s, int originalalpha, int originalbeta, int depth) {
             legal_move = TRUE;
         }
 
-        if (uci_mode && gamestate.i_depth > 4 && (rdifftime(rtime(), gamestate.start_time) >= 150)
-            && uci_showrefutations) {
-            myprintf("info refutation %s ", searching_move);
-            extract_current_bestline(s);
-        }
-
         unmake(s, moves[i]);
 
         /* if we've run out of time, return the best we have so far: */
@@ -1874,22 +1868,6 @@ move_s think(gamestate_t *g, state_t *s) {
 
     if (gamestate.i_depth >= 32 && is_pondering && uci_mode && !buffered_count) {
         while ((gamestate.time_for_move == 99999999) && !interrupt());
-    }
-
-    if (uci_mode) {
-        // get ponder move
-        make(s, comp_move);
-        pondermove = extract_ponder_move(s);
-        unmake(s, comp_move);
-
-        comp_to_coord(s, comp_move, output);
-
-        if (pondermove != 0) {
-            comp_to_coord(s, pondermove, output2);
-            myprintf("bestmove %s ponder %s\n", output, output2);
-        } else {
-            myprintf("bestmove %s\n", output);
-        }
     }
 
     if (temp_score == MATE - 2 && !is_pondering) {

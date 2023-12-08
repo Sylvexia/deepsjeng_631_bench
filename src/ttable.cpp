@@ -92,12 +92,6 @@ void StoreTT(state_t*s,
 
     nhash = s->hash + (!s->white_to_move);
 
-    // if (!s->white_to_move) {
-    //     nhash = s->hash + 1;
-    // } else {
-    //     nhash = s->hash;
-    // }
-
     index = (unsigned int)nhash;
     temp = &(TTable[index % TTSize]);
 
@@ -170,8 +164,6 @@ int ProbeTT(state_t *s,
             int *score, int alpha, int beta, 
             unsigned int *best, int *threat, int *donull, int *singular,
             int *nosingular, const int depth) {
-    int type;
-    int i;    
     BITBOARD nhash;
     unsigned int index;
     ttentry_t *temp;
@@ -182,22 +174,33 @@ int ProbeTT(state_t *s,
     nhash = s->hash + (!s->white_to_move);
 
     index = (unsigned int)nhash;
-    temp = &(TTable[index % (TTSize)]);
+    index %= TTSize;
+    temp = &(TTable[index]);
 
     nhash >>= 32;
 
+    // gather
+    // ttbucket_t temp_entry[BUCKETS];
+    // for (int i = 0; i < BUCKETS; i++) {
+    //     temp_entry[i] = (TTable[index]).buckets[i];
+    // }
+
     #pragma unroll
-    for (i = 0; i < BUCKETS; i++) {
-        entry = temp->buckets + i;
-        if (entry->hash == nhash) {
+    for (int i = 0; i < BUCKETS; i++) {
+        entry = &(temp->buckets[i]);
+        unsigned int entry_hash = entry->hash;
+        if (entry_hash == nhash) {
             
             entry->age = TTAge;
 
-            if (entry->type == UPPER 
-                && depth - 4 * PLY <= entry->depth 
-                && entry->bound < beta) {
-                *donull = FALSE;
-            }                        
+            *donull = !(entry->type == UPPER 
+                        && depth - 4 * PLY <= entry->depth 
+                        && entry->bound < beta);     
+
+            *best = entry->bestmove;
+            *threat = entry->threat;
+            *singular = entry->singular;
+            *nosingular = entry->nosingular;
 
             if (entry->depth >= depth) {
                 *score = entry->bound;
@@ -207,20 +210,9 @@ int ProbeTT(state_t *s,
                 } else if (*score < (-MATE + 500)) {
                     *score += (s->ply - 1);
                 }
-
-                *best = entry->bestmove;
-                *threat = entry->threat;
-                *singular = entry->singular;
-                *nosingular = entry->nosingular;
-                type = entry->type;
                                    
-                return type;
+                return entry->type;
             } else {
-                *best = entry->bestmove;
-                *threat = entry->threat;
-                *singular = entry->singular;
-                *nosingular = entry->nosingular;
-
                 if (entry->type == UPPER) {
                     *score = -INF;
                 } else if (entry->type == LOWER) {

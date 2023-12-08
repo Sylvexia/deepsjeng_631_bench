@@ -15,6 +15,7 @@
 #include "ttable.h"
 #include "search.h"
 #include "squares.h"
+#include <omp.h>
 
 /*
     read an EPD string and set up the board position to
