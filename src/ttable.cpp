@@ -13,6 +13,7 @@
 #include "bitboard.h"
 #include "utils.h"
 #include "pawn.h"
+#include <immintrin.h>
 
 BITBOARD zobrist[14][64];
 
@@ -179,18 +180,26 @@ int ProbeTT(state_t *s,
 
     nhash >>= 32;
 
-    // gather
-    // ttbucket_t temp_entry[BUCKETS];
-    // for (int i = 0; i < BUCKETS; i++) {
-    //     temp_entry[i] = (TTable[index]).buckets[i];
-    // }
+    unsigned int hashes[BUCKETS];
 
-    #pragma unroll
-    for (int i = 0; i < BUCKETS; i++) {
+    for(int i = 0; i < BUCKETS; i++) {
+        hashes[i] = temp->buckets[i].hash;
+    }
+
+    // compare simd
+    __m128i vec_a = _mm_set1_epi32((unsigned int)nhash);
+    __m128i vec_b = _mm_loadu_si128((__m128i*)hashes); //?
+
+    __m128i cmp = _mm_cmpeq_epi32(vec_a, vec_b);
+
+    int res[4];
+    _mm_storeu_si128((__m128i*)res, cmp);
+
+    for(int i = 0; i < BUCKETS; i++) {
         entry = &(temp->buckets[i]);
-        unsigned int entry_hash = entry->hash;
-        if (entry_hash == nhash) {
-            
+
+        if(res[i] == -1) 
+        {
             entry->age = TTAge;
 
             *donull = !(entry->type == UPPER 
@@ -226,8 +235,54 @@ int ProbeTT(state_t *s,
 
                 return DUMMY;
             }
-        } 
-    }      
+
+        }
+
+    }
+
+    // #pragma unroll
+    // for (int i = 0; i < BUCKETS; i++) {
+    //     entry = &(temp->buckets[i]);
+    //     _mm_prefetch((const char *)entry + 1, _MM_HINT_T0);
+    //     if (entry->hash == nhash) {
+            
+    //         entry->age = TTAge;
+
+    //         *donull = !(entry->type == UPPER 
+    //                     && depth - 4 * PLY <= entry->depth 
+    //                     && entry->bound < beta);     
+
+    //         *best = entry->bestmove;
+    //         *threat = entry->threat;
+    //         *singular = entry->singular;
+    //         *nosingular = entry->nosingular;
+
+    //         if (entry->depth >= depth) {
+    //             *score = entry->bound;
+
+    //             if (*score > (+MATE - 500)) {
+    //                 *score -= (s->ply - 1);
+    //             } else if (*score < (-MATE + 500)) {
+    //                 *score += (s->ply - 1);
+    //             }
+                                   
+    //             return entry->type;
+    //         } else {
+    //             if (entry->type == UPPER) {
+    //                 *score = -INF;
+    //             } else if (entry->type == LOWER) {
+    //                 *score = +INF;
+    //             } else {
+    //                 *score = entry->bound;
+    //             }
+                
+    //             entry->depth = depth;
+    //             entry->type = DUMMY;                
+
+    //             return DUMMY;
+    //         }
+    //     } 
+    // }      
          
     return HMISS;
 }
