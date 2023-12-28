@@ -16,6 +16,8 @@
 #include <immintrin.h>
 
 BITBOARD zobrist[14][64];
+unsigned int hashes[BUCKETS];
+int res[4];
 
 ttentry_t *TTable;
 unsigned int TTAge; 
@@ -180,7 +182,7 @@ int ProbeTT(state_t *s,
 
     nhash >>= 32;
 
-    unsigned int hashes[BUCKETS];
+    _mm_prefetch((const char *)(&(temp->buckets[0])), _MM_HINT_T0);
 
     for(int i = 0; i < BUCKETS; i++) {
         hashes[i] = temp->buckets[i].hash;
@@ -188,15 +190,15 @@ int ProbeTT(state_t *s,
 
     // compare simd
     __m128i vec_a = _mm_set1_epi32((unsigned int)nhash);
-    __m128i vec_b = _mm_loadu_si128((__m128i*)hashes); //?
+    __m128i vec_b = _mm_loadu_si128((__m128i*)hashes);
 
     __m128i cmp = _mm_cmpeq_epi32(vec_a, vec_b);
 
-    int res[4];
     _mm_storeu_si128((__m128i*)res, cmp);
 
     for(int i = 0; i < BUCKETS; i++) {
         entry = &(temp->buckets[i]);
+        _mm_prefetch((const char *)entry + 1, _MM_HINT_T0);
 
         if(res[i] == -1) 
         {
