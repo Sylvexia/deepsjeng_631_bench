@@ -16,6 +16,8 @@
 #include "search.h"
 #include "squares.h"
 #include <omp.h>
+#include <string>
+#include <vector>
 
 /*
     read an EPD string and set up the board position to
@@ -348,20 +350,29 @@ void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
         return;
     }
 
+    std::vector<std::string> lines;
+    std::vector<int> depths;
+
     while (fgets(readbuff, STR_BUFF, testsuite) != NULL) {
         tested++;
-
-        clear_tt();
-        setup_epd_line(g, s, readbuff);
-
+        lines.push_back(readbuff);
         fgets(readbuff, STR_BUFF, testsuite);
         sscanf(readbuff, "%d", &thinkdepth);
+        depths.push_back(thinkdepth);
 
-        myprintf("Analyzing %d plies...\n", thinkdepth);
+    };
+
+    fclose(testsuite);
+    
+    for(int i = 0; i < lines.size(); i++) {
+        clear_tt();
+        setup_epd_line(g, s, lines[i].c_str());
+
+        myprintf("Analyzing %d plies...\n", depths[i]);
         display_board(s, 1);
 
         g->fixed_time = 99999999;
-        g->maxdepth = thinkdepth;
+        g->maxdepth = depths[i];
 
         comp_move = think(g, s);
 
@@ -371,9 +382,8 @@ void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
 
 
         myprintf("\n");        
-    };
 
-    fclose(testsuite);    
+    }
 }
 
 /*
