@@ -4,6 +4,7 @@
 #include "config.h"
 
 #include "sjeng.h"
+#include <omp.h>
 
 /*
     defines
@@ -107,6 +108,7 @@ struct scoreboard_t {
 extern state_t      state;
 extern gamestate_t  gamestate;
 extern scoreboard_t scoreboard;
+#pragma omp threadprivate(scoreboard)
 
 /* 
     functions

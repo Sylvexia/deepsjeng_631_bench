@@ -14,13 +14,16 @@
 #include "utils.h"
 #include "pawn.h"
 #include <immintrin.h>
+#include <omp.h>
 
 BITBOARD zobrist[14][64];
 unsigned int hashes[BUCKETS];
 int res[4];
+#pragma omp threadprivate(zobrist, hashes, res)
 
 ttentry_t *TTable;
 unsigned int TTAge; 
+#pragma omp threadprivate(TTable, TTAge)
 
 void clear_tt(void) {
     memset(TTable, 0, sizeof(ttentry_t) * TTSize);    

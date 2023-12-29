@@ -19,6 +19,7 @@
 #include "board.h"
 #include "utils.h"
 #include "squares.h"
+#include <omp.h>
 
 /*
     Length of the diagonals.
@@ -52,20 +53,24 @@ BITBOARD KnightMoves[64],
          PawnAttacksWhite[64],
          PawnMovesBlack[64],
          PawnMovesWhite[64];
+#pragma omp threadprivate(KnightMoves, KingMoves, PawnAttacksBlack, PawnAttacksWhite, PawnMovesBlack, PawnMovesWhite)
 
 BITBOARD fillUpAttacks[64][8], 
          aFileAttacks[64][8];
+#pragma omp threadprivate(fillUpAttacks, aFileAttacks)
 
 unsigned char firstRankAttacks[64][8];
-
+#pragma omp threadprivate(firstRankAttacks)
 /*
     Board masks
 */
 BITBOARD Mask[64], 
          InvMask[64];        
+#pragma omp threadprivate(Mask, InvMask)
 
 BITBOARD DiagMaska1h8[64], 
          DiagMaska8h1[64];
+#pragma omp threadprivate(DiagMaska1h8, DiagMaska8h1)
 
 BITBOARD FileMask[8],
          RankMask[8],
@@ -73,37 +78,47 @@ BITBOARD FileMask[8],
          BelowMask[8],
          LeftMask[8],
          RightMask[8];
+#pragma omp threadprivate(FileMask, RankMask, AboveMask, BelowMask, LeftMask, RightMask)
 
 BITBOARD RookMask[64],
          BishopMask[64],
          QueenMask[64]; 
+#pragma omp threadprivate(RookMask, BishopMask, QueenMask)
 
 BITBOARD CastleMask[4];
+#pragma omp threadprivate(CastleMask)
 
 BITBOARD FileUpMask[64],
          FileDownMask[64];
+#pragma omp threadprivate(FileUpMask, FileDownMask)
 
 BITBOARD WhiteKingSide, 
          WhiteQueenSide, 
          BlackKingSide, 
          BlackQueenSide;
+#pragma omp threadprivate(WhiteKingSide, WhiteQueenSide, BlackKingSide, BlackQueenSide)
 BITBOARD KingSafetyMask[64],
          KingSafetyMask1[64];
+#pragma omp threadprivate(KingSafetyMask, KingSafetyMask1)
 
 BITBOARD WhiteStrongSquareMask,
          BlackStrongSquareMask;
+#pragma omp threadprivate(WhiteStrongSquareMask, BlackStrongSquareMask)
 
 BITBOARD WhiteSqMask,
          BlackSqMask;
+#pragma omp threadprivate(WhiteSqMask, BlackSqMask)
 
 BITBOARD KSMask,
          QSMask;    
+#pragma omp threadprivate(KSMask, QSMask)
                  
 BITBOARD KingFilesMask[8],
          KingPressureMask[64],
          KingPressureMask1[64],
          CenterMask,
          SpaceMask[2];      
+#pragma omp threadprivate(KingFilesMask, KingPressureMask, KingPressureMask1, CenterMask, SpaceMask)
 
 /*
     Debugging aides

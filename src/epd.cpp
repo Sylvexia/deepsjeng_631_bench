@@ -25,6 +25,7 @@
 */
 void setup_epd_line(gamestate_t *g, state_t *s, const char* inbuff) {
     static const int rankoffsets[] = { a8, a7, a6, a5, a4, a3, a2, a1 };
+    
 
     /*
         State of parsing the EPD string
@@ -363,9 +364,10 @@ void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
     };
 
     fclose(testsuite);
-    
+    clear_tt();
+
+    #pragma omp parallel for firstprivate(g, s, lines, depths)
     for(int i = 0; i < lines.size(); i++) {
-        clear_tt();
         setup_epd_line(g, s, lines[i].c_str());
 
         myprintf("Analyzing %d plies...\n", depths[i]);
@@ -374,15 +376,13 @@ void run_epd_testsuite(gamestate_t *g, state_t *s, const char *testname) {
         g->fixed_time = 99999999;
         g->maxdepth = depths[i];
 
-        comp_move = think(g, s);
-
+        //comp_move = think(g, s);
+        think(g, s);
         myprintf("\nNodes: %llu (%0.2f%% qnodes)\n",
-                 s->nodes,
-                 (float)((float)s->qnodes / (float)s->nodes * 100.0));
-
+                s->nodes,
+                (float)((float)s->qnodes / (float)s->nodes * 100.0));
 
         myprintf("\n");        
-
     }
 }
 

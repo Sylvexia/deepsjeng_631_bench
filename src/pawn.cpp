@@ -13,6 +13,7 @@
 #include "bits.h"
 #include "pawn.h"
 #include "squares.h"
+#include <omp.h>
 
 #define PAWN_HASH_LOG   (14)
 #undef PAWN_EVAL_DEBUG
@@ -28,7 +29,7 @@ static const int w_candidate[6] = {
     pawn evaluation hashtable 
 */
 static pawntt_t PawnTT[MAX_CPU][1 << PAWN_HASH_LOG];
-
+#pragma omp threadprivate(PawnTT)
 /*
     reset pawn evaluation hash table
 */

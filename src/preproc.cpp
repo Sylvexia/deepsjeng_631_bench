@@ -14,10 +14,12 @@
 #include "neval.h"
 #include "bits.h"
 #include "squares.h"
+#include <omp.h>
 
 #undef PSQ_EVAL_DEBUG
 
 signed char psq_table[12][64];
+#pragma omp threadprivate(psq_table)
 
 /*
     horizontal flipped board

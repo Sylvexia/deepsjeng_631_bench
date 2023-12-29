@@ -32,6 +32,7 @@
 #include "bits.h"
 #include "squares.h"
 #include "search.h"
+#include <omp.h>
 
 static const int rc_index[14] = {
     0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 2, 2, 0
@@ -40,6 +41,7 @@ static const int rc_index[14] = {
 int history_h[MAX_CPU][12][64];
 int history_hit[MAX_CPU][12][64];
 int history_tot[MAX_CPU][12][64];
+#pragma omp threadprivate(history_h, history_hit, history_tot)
 
 static void history_good(state_t *s, const move_s move, const int depth) {
     int i, j;

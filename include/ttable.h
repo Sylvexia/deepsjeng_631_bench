@@ -2,6 +2,7 @@
 #define TTABLE_H
 
 #include "state.h"
+#include <omp.h>
 /*
     defs
 */
@@ -27,6 +28,7 @@ struct ttentry_t {
     data
 */
 extern BITBOARD zobrist[14][64]; 
+#pragma omp threadprivate(zobrist)
     
 /*
     functions

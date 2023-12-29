@@ -24,13 +24,16 @@
 
 #include <stdarg.h>
 #include <limits.h>
+#include <omp.h>
 
 static unsigned int s1, s2, s3;
+#pragma omp threadprivate(s1, s2, s3)
 
 /* multipv information */
 int root_scores[MOVE_BUFF];
 char multipv_strings[MOVE_BUFF][STR_BUFF];
 int multipv_scores[MOVE_BUFF];
+#pragma omp threadprivate(root_scores, multipv_strings, multipv_scores)
 
 
 int elo_to_depth(int elo) {

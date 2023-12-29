@@ -2,12 +2,14 @@
 #define PREPROC_H
 
 #include "neval.h"
+#include <omp.h>
 
 /*
     data
 */
 extern const int flip[64];
 extern signed char psq_table[12][64];
+#pragma omp threadprivate(psq_table)
 
 /* 
     functions

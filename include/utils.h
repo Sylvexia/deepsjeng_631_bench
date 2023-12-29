@@ -3,6 +3,7 @@
 
 #include "sjeng.h"
 #include "state.h"
+#include <omp.h>
 
 /*
     data
@@ -10,6 +11,7 @@
 extern int root_scores[MOVE_BUFF];
 extern char multipv_strings[MOVE_BUFF][STR_BUFF];
 extern int multipv_scores[MOVE_BUFF];
+#pragma omp threadprivate(root_scores, multipv_strings, multipv_scores)
 
 /* 
     functions
